@@ -9,7 +9,7 @@ import os
 from dotenv import load_dotenv, find_dotenv
 
 from prompt import model_prompts
-from src.answer_cacluate import AnswerAccuracyCalculator, load_json_from_file
+from src.model_evaluation.answer_cacluate import AnswerAccuracyCalculator, load_json_from_file
 from utils.logger import StructuredLogger
 
 _ = load_dotenv(find_dotenv())
@@ -160,7 +160,7 @@ def append_to_json_file(new_data, filename="all_results.json"):
 
 if __name__ == '__main__':
     chinese_data = transfer_to_chinese()
-    result_path = "./mmlu_data_result.json"
+    result_path = "mmlu_data_result.json"
     extract_result = []
     for chinese_json in chinese_data:
         json_obj = json.loads(chinese_json)

@@ -102,7 +102,7 @@ def load_json_from_string(json_str: str) -> List[Dict[str, Any]]:
 # 使用示例
 if __name__ == "__main__":
     # 示例JSON数据
-    json_data_path = './mmlu_data_result.json'
+    json_data_path = 'mmlu_data_result.json'
     calculator = AnswerAccuracyCalculator(load_json_from_file(json_data_path))
     calculator.run_analysis()
 
