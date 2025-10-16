@@ -7,9 +7,9 @@ import numpy as np
 import openai
 import os
 from dotenv import load_dotenv, find_dotenv
-from openai import NOT_GIVEN
 
 from prompt import model_prompts
+from src.answer_cacluate import AnswerAccuracyCalculator, load_json_from_file
 from utils.logger import StructuredLogger
 
 _ = load_dotenv(find_dotenv())
@@ -160,6 +160,7 @@ def append_to_json_file(new_data, filename="all_results.json"):
 
 if __name__ == '__main__':
     chinese_data = transfer_to_chinese()
+    result_path = "./mmlu_data_result.json"
     extract_result = []
     for chinese_json in chinese_data:
         json_obj = json.loads(chinese_json)
@@ -173,6 +174,9 @@ if __name__ == '__main__':
         response_dict['answer'] = answer
         logger.log(logging.INFO, "第{}条数据的获取答案成功".format(len(extract_result) + 1))
         extract_result.append(response_dict)
-    append_to_json_file(extract_result,'mmlu_data_result.json')
+    append_to_json_file(extract_result,result_path)
     logger.log(logging.INFO, "保存结果到文件成功, 数据条数为{}".format(len(extract_result)))
-    # print(json.dumps(response_dict, default=safe_json_dumps, ensure_ascii=False, indent=2, separators=(",", ":")))
+
+   # 测评文件中的数据准确率
+    calculator = AnswerAccuracyCalculator(load_json_from_file(result_path))
+    calculator.run_analysis()
