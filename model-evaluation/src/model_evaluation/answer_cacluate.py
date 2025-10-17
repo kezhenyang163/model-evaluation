@@ -1,15 +1,16 @@
 import json
 from typing import List, Dict, Any
 
+
 class AnswerAccuracyCalculator:
-    def __init__(self, json_data: List[Dict[str, Any]]):
+    def __init__(self, json_data: List[List[Dict[str, Any]]]):
         """
         初始化计算器
         Args:
             json_data: JSON数组数据
         """
         self.json_data = json_data
-        self.size = len(json_data)
+        self.size =0
         self.correct_count = 0
         self.results = []
 
@@ -21,27 +22,26 @@ class AnswerAccuracyCalculator:
             准确率百分比
         """
         self.correct_count = 0
+        for json_arr in self.json_data:
+            for i, item in enumerate(json_arr, 1):
+                question = item.get("question", "")
+                model_answer = item.get("model_answer", "")
+                answer = item.get("answer", "")
+                # 记录每个问题的结果
+                result = {
+                    "question_number": i,
+                    "question": question,
+                    "model_answer": model_answer,
+                    "answer": answer,
+                    "is_correct": False
+                }
+                # 比较答案是否一致
+                self.size += 1
+                if str(model_answer) == str(answer):
+                    self.correct_count += 1
+                    result["is_correct"] = True
 
-        for i, item in enumerate(self.json_data, 1):
-            question = item.get("question", "")
-            model_answer = item.get("model_answer", "")
-            answer = item.get("answer", "")
-
-            # 记录每个问题的结果
-            result = {
-                "question_number": i,
-                "question": question,
-                "model_answer": model_answer,
-                "answer": answer,
-                "is_correct": False
-            }
-
-            # 比较答案是否一致
-            if str(model_answer) == str(answer):
-                self.correct_count += 1
-                result["is_correct"] = True
-
-            self.results.append(result)
+                self.results.append(result)
 
         # 计算准确率
         if self.size > 0:
@@ -72,7 +72,7 @@ class AnswerAccuracyCalculator:
         return accuracy
 
 
-def load_json_from_file(file_path: str) -> List[Dict[str, Any]]:
+def load_json_from_file(file_path: str) -> List[List[Dict[str, Any]]]:
     """
     从文件加载JSON数据
 
@@ -110,4 +110,3 @@ if __name__ == "__main__":
     # print("额外统计信息：")
     # print(f"总问题数: {calculator.size}")
     # print(f"正确回答数: {calculator.correct_count}")
-

@@ -14,6 +14,9 @@ from utils.logger import StructuredLogger
 
 _ = load_dotenv(find_dotenv())
 # 获取环境变量 OPENAI_API_KEY
+# client = openai.OpenAI(base_url=os.environ['OPENAI_BASE_URL'], api_key=os.environ['OPENAI_API_KEY'])
+# big_model = os.environ['OPENAI_GPT4_MINI_MODEL']
+
 client = openai.OpenAI(base_url=os.environ['DEEPSEEK_BASE_URL'], api_key=os.environ['DEEPSEEK_API_KEY'])
 big_model = os.environ['DEEPSEEK_BASE_MODEL']
 
@@ -35,7 +38,7 @@ def get_random_data():
 
     df = pd.read_parquet(datadir)
     # np.random.seed(142)  # 设置随机种子以便复现
-    numbers = [np.random.randint(0, len(df)) for _ in range(10)]
+    numbers = [np.random.randint(0, len(df)) for _ in range(2)]
     init_df = df.iloc[numbers]
     logger.log(logging.INFO, "文件读取成功，获取随机10条数据成功")
     return init_df
@@ -142,13 +145,14 @@ def append_to_json_file(new_data, filename="all_results.json"):
             json.dump(new_data, f, ensure_ascii=False, indent=2)
     else:
         # 如果文件存在，读取现有数据，追加新数据，再写回
+        existing_data = []
         with open(filename, 'r', encoding='utf-8') as f:
-            existing_data = json.load(f)
-
-        # 确保existing_data是列表
-        if not isinstance(existing_data, list):
-            existing_data = [existing_data]
-
+            content = f.read().strip()
+            if not content:
+                print("文件存在，文件内容为空")
+            else:
+                # 文件内容不为空则加载为Json数组
+                existing_data = json.loads(content)
         # 追加新数据
         existing_data.append(new_data)
 
